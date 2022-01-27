@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.base.exam.web.mapper.AdminMapper">
+
+<!-- <resultMap type="adminDTO" id="adminMap">
+	<result column="id" property="id"/>
+	<result column="pw" property="pw"/>
+	<result column="name" property="name"/>
+	<result column="phone" property="phone"/>
+	<result column="email" property="email"/>
+	<result column="level" property="level"/>
+</resultMap>
+ -->
+<!-- <resultMap type="com.base.exam.web.dto.UserDTO" id="userMap">
+	<collection property="UserDTO" resultMap="userMap"/>
+</resultMap> -->
+
+
+<select id="adminLogin" parameterType="hashMap" resultType="com.base.exam.web.dto.AdminDTO">
+	SELECT 
+			ID 
+	  	   ,PW
+	FROM
+			ADMIN_INFO
+	WHERE
+			ID = #{id} 
+	  AND 
+			 PW = #{pw}	
+</select>
+
+
+<select id="loginCk" parameterType="com.base.exam.web.dto.AdminDTO" resultType="com.base.exam.web.dto.AdminDTO">
+	SELECT
+           ID
+		  ,NAME
+          ,EMAIL
+          ,LEVEL
+	FROM
+			ADMIN_INFO
+	WHERE
+			ID = #{id}
+    AND        
+		    PW = #{pw}   		
+	
+</select>
+
+</mapper>
+

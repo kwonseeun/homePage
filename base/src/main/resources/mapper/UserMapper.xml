@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.base.exam.web.mapper.UserMapper">
+
+<insert id="userInsert" parameterType="com.base.exam.web.dto.UserDTO">
+
+	INSERT INTO USER_TEST (
+	  ID
+	, PW
+	, JOIN_DTTM
+	, EMAIL
+	, NAME
+	, STATUS
+	, DEL_YN
+	, LAST_LOGIN_DTTM
+	)
+	VALUES
+	(
+	  #{id}
+	, #{pw}
+	, NOW()
+	, #{email}
+	, #{name}
+	, 'U'
+	, 'N'
+	, NOW()
+	)
+</insert>
+	
+	
+<select id="login" parameterType="hashMap" resultType="com.base.exam.web.dto.UserDTO">
+	SELECT 
+			ID 
+		   ,NAME	
+	  	   ,PW
+	FROM
+			USER_TEST
+	WHERE
+			 ID = #{id} 
+	  AND 
+			 PW = #{pw}		 
+</select>	
+
+
+<select id ="idCheck" parameterType="com.base.exam.web.dto.UserDTO" resultType="int" >
+	SELECT
+			COUNT(*)
+	FROM
+			USER_TEST
+	WHERE 
+			ID = #{id}	
+</select>
+
+
+<select id="userList" parameterType="com.base.exam.web.dto.UserDTO" resultType="com.base.exam.web.dto.UserDTO">
+	SELECT  
+		A.ID
+	  , A.JOIN_DTTM AS JOINDTTM
+	  , A.EMAIL
+	  , A.NAME
+	  , A.STATUS
+	  , A.DEL_YN AS DELYN
+      , A.LAST_LOGIN_DTTM AS LASTLOGINDTTM
+      , A.TOTAL_COUNT AS TOTALCOUNT
+      , A.SEQ AS SEQ
+      
+	FROM
+	(
+	
+	SELECT
+		Z.ID
+	   ,Z.JOIN_DTTM
+	   ,Z.EMAIL
+	   ,Z.NAME
+	   ,Z.STATUS
+	   ,Z.DEL_YN 
+	   ,Z.LAST_LOGIN_DTTM 
+	   ,SUM( 1) OVER() AS TOTAL_COUNT
+	   ,ROW_NUMBER() OVER( ORDER BY Z.JOIN_DTTM DESC ) AS SEQ
+	   FROM (
+	   
+	   SELECT 
+	   
+	   ID
+	  ,JOIN_DTTM
+	  ,EMAIL
+	  ,NAME
+	  ,STATUS
+	  ,DEL_YN
+	  ,LAST_LOGIN_DTTM
+	  FROM USER_TEST
+	  
+	  ) Z
+	  
+	  ) A
+	  WHERE 1=1
+	   
+	<if test=" currentPage != '0' ">
+		AND CEIL( SEQ / #{pageSize} ) = #{currentPage}
+	</if>
+</select>	
+
+
+<select id="userList2" parameterType="com.base.exam.web.dto.UserDTO" resultType="com.base.exam.web.dto.UserDTO">
+	SELECT  
+		A.ID
+	  , A.JOIN_DTTM AS JOINDTTM
+	  , A.EMAIL
+	  , A.NAME
+	  , A.STATUS
+	  , A.DEL_YN AS DELYN
+      , A.LAST_LOGIN_DTTM AS LASTLOGINDTTM
+      , A.TOTAL_COUNT AS TOTALCOUNT
+      , A.SEQ AS SEQ
+      
+	FROM
+	(
+	
+	SELECT
+		Z.ID
+	   ,Z.JOIN_DTTM
+	   ,Z.EMAIL
+	   ,Z.NAME
+	   ,Z.STATUS
+	   ,Z.DEL_YN 
+	   ,Z.LAST_LOGIN_DTTM 
+	   ,SUM( 1) OVER() AS TOTAL_COUNT
+	   ,ROW_NUMBER() OVER( ORDER BY Z.JOIN_DTTM DESC ) AS SEQ
+	   FROM (
+	   
+	   SELECT 
+	   
+	   ID
+	  ,JOIN_DTTM
+	  ,EMAIL
+	  ,NAME
+	  ,STATUS
+	  ,DEL_YN
+	  ,LAST_LOGIN_DTTM
+	  FROM USER_TEST
+	  
+	  ) Z
+	  
+	  ) A
+	  WHERE 1=1
+	   
+	<if test=" currentPage != '0' ">
+		AND CEIL( SEQ / #{pageSize} ) = #{currentPage}
+	</if>
+</select>	
+
+
+<update id= "userUpdate" parameterType="com.base.exam.web.dto.UserDTO"> 
+	UPDATE 
+			USER_TEST				
+	SET
+			STATUS = #{status}
+		   ,DEL_YN = #{delYn}
+	WHERE
+			ID = #{id}   		
+</update> 
+
+
+<select id= "userView" resultType="com.base.exam.web.dto.UserDTO" parameterType="com.base.exam.web.dto.UserDTO">
+	SELECT  
+			ID
+		   ,JOIN_DTTM AS JOINDTTM
+		   ,EMAIL
+		   ,NAME
+		   ,STATUS
+		   ,DEL_YN AS DELYN
+		   ,LAST_LOGIN_DTTM AS LASTLOGINDTTM
+	FROM
+			USER_TEST
+    WHERE
+			ID = #{id}	
+</select>	
+
+<delete id="userDelInfo" parameterType="com.base.exam.web.dto.UserDTO">
+	DELETE
+	FROM
+			USER_TEST
+	WHERE
+			ID =#{id}				
+			
+</delete>
+
+<update id= "myPage" parameterType="com.base.exam.web.dto.UserDTO">
+	UPDATE 
+			USER_TEST				
+	SET
+
+		   EMAIL = #{email} 
+		  ,NAME = #{name}
+	WHERE
+		   ID = #{id} 
+</update>
+
+</mapper>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.base.exam.web.mapper.ReplyMapper">
+
+	
+	<select id="commentList" resultType="com.base.exam.web.dto.ReplyDTO" parameterType="com.base.exam.web.dto.ReplyDTO">
+		SELECT 
+				 CNO
+			 	,BID
+				,CONTENT
+				,REG_ID AS REGID
+				,REG_DTTM AS REGDTTM
+				,DEL_YN AS DELYN
+				,UPDT_ID AS UPDTID
+				,UPDT_DTTM AS UPDTDTTM
+		FROM
+				COMMENT_TEST
+		WHERE
+				BID = #{bid}			
+
+	</select>
+	
+	<insert id="commentInsert" parameterType="com.base.exam.web.dto.ReplyDTO">
+		INSERT INTO
+		COMMENT_TEST (				
+				    BID
+				   ,CONTENT
+				   ,REG_ID
+				   ,REG_DTTM
+				   ,DEL_YN
+				   ,UPDT_ID
+				   ,UPDT_DTTM
+					)
+					VALUES
+					(
+				    #{bid}
+				   ,#{content}
+				   ,#{regId}
+				   ,now()
+				   ,'N'
+				   ,#{regId}
+				   ,now()	
+					)			
+	</insert>
+	
+	<update id="commentUpdate" parameterType="com.base.exam.web.dto.ReplyDTO">
+		UPDATE
+			  COMMENT_TEST
+		SET
+			  CONTENT = #{content}
+		WHERE
+			   CNO = #{cno}		
+	</update>
+
+	 
+	<delete id="commentDelete" parameterType="com.base.exam.web.dto.ReplyDTO">
+	   DELETE 
+		 FROM
+			  COMMENT_TEST
+		WHERE
+			  CNO = #{cno}
+	</delete> 
+	
+	
+	<update id="updateReplyCount">
+		UPDATE
+			  board_test b
+		SET
+		      b.reply_count = (select count(cno) from comment_test where id = #{id})
+		WHERE
+			  b.id = #{id}		
+	</update>
+	
+	
+</mapper> 

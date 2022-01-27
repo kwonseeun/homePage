@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.base.exam.web.mapper.TestMapper">
+
+	<select id="getBoardList" resultType="com.base.exam.web.dto.TestDTO">
+		SELECT
+				BID
+			  , CATE_CD
+			  , TITLE
+			  , CONTENT
+			  , TAG
+			  , VIEW_CNT
+			  , REG_ID
+			  , REG_DT
+			  , EDIT_DT
+		FROM
+			    TBL_BOARD	
+				<trim prefix="WHERE" prefixOverrides="AND|OR">
+					<if test="searchType=='title' and keyword != null and keyword != '' ">
+						AND TITLE like CONCAT('%', #{keyword}, '%')
+					</if>
+					<if test="searchType=='content' and keyword != null and keyword != '' ">
+						AND CONTENT like CONCAT('%', #{keyword}, '%')
+					</if>
+					<if test="searchType=='reg_id' and keyword != null and keyword != '' ">
+						AND reg_id like CONCAT('%', #{keyword}, '%')
+					</if>	
+				</trim>
+		LIMIT 
+				#{startList}, #{listSize}
+	</select>
+	
+	<select id="getBoardListCnt" resultType="int">
+		SELECT
+		  	  count(*) as listCnt
+		FROM
+			  TBL_BOARD
+			  
+			<trim prefix="WHERE" prefixOverrides="AND|OR">
+				<if test="keyword != null and keyword != '' ">
+					<if test="searchType=='title'">
+						AND TITLE like CONCAT('%', #{keyword}, '%')
+					</if>
+					<if test="searchType=='content'">
+						AND CONTENT like CONCAT('%', #{keyword}, '%')
+					</if>
+					<if test="searchType=='reg_id'">
+						AND reg_id like CONCAT('%', #{keyword}, '%')
+					</if>
+		      </if>
+			</trim>
+	</select>
+
+
+<insert id="insertBoard" parameterType="com.base.exam.web.dto.TestDTO">
+		INSERT INTO 
+					TBL_BOARD
+				  (
+				    CATE_CD
+				  , TITLE
+				  , CONTENT
+				  , TAG
+				  , VIEW_CNT
+				  , REG_ID
+				  , REG_DT
+				  , EDIT_DT
+				 )
+		VALUES   (
+				   #{cate_cd}
+				 , #{title}
+			     , #{content}
+				 , #{tag}
+				 , 0
+				 , #{reg_id}
+				 , now()
+				 , now()
+				)
+	</insert>
+	
+<select id="getBoardContent" resultType="com.base.exam.web.dto.TestDTO" parameterType="int">
+	SELECT
+			BID
+		  , CATE_CD
+		  , TITLE
+		  , CONTENT
+		  , TAG
+		  , VIEW_CNT
+		  , REG_ID
+		  , REG_DT
+		  , EDIT_DT
+	FROM
+			TBL_BOARD
+
+	WHERE
+		BID = #{bid}
+</select>	
+
+
+<update id="updateBoard" parameterType="com.base.exam.web.dto.TestDTO">
+	UPDATE 
+		   TBL_BOARD
+	   SET
+		    CATE_CD = #{cate_cd}
+		  , TITLE = #{title}
+		  , CONTENT = #{content}
+		  , TAG = #{tag}
+		  , EDIT_DT = now()
+	WHERE
+		    BID = ${bid}
+</update>
+
+<update id="updateViewCnt" parameterType="com.base.exam.web.dto.TestDTO">
+	UPDATE 
+		   TBL_BOARD
+	   SET
+		   VIEW_CNT = VIEW_CNT + 1
+     WHERE
+		   BID = #{bid}
+
+	</update>
+
+<delete id="deleteBoard" parameterType="com.base.exam.web.dto.TestDTO">
+	DELETE
+	FROM
+		  TBL_BOARD
+	WHERE
+		  BID = #{bid}		
+</delete>
+
+
+
+<!-- 댓글 목록 -->
+<select id="getReplyList" resultType="com.base.exam.web.dto.CommentDTO">	
+	
+	SELECT
+			RID
+		  , BID
+		  , CONTENT
+		  , REG_ID
+		  , REG_DT
+		  , EDIT_DT
+	FROM
+			TBL_REPLY	  
+	WHERE
+			BID = #{bid}
+	ORDER BY 
+			REG_DT DESC				
+</select>
+			
+
+<!-- 댓글 등록 -->
+<insert id="saveReply" parameterType="com.base.exam.web.dto.CommentDTO">
+	INSERT INTO  
+	TBL_REPLY	
+	  		(
+		    BID
+		  , CONTENT
+		  , REG_ID
+		  , REG_DT
+		  , EDIT_DT	
+			)
+	VALUES (
+		    #{bid}
+		  , #{content}
+		  , #{reg_id} 
+		  , now()
+		  , now()  
+		   )					  
+</insert>
+
+<!-- 댓글 수정 -->
+<update id="updateReply" parameterType="com.base.exam.web.dto.CommentDTO">
+	UPDATE
+			TBL_REPLY
+	SET
+			CONTENT = #{content}
+		  , EDIT_DT = now()	
+	WHERE
+			RID = #{rid}			
+</update>
+
+
+<!-- 댓글 삭제 -->
+<delete id="deleteReply" parameterType="com.base.exam.web.dto.CommentDTO">
+	DELETE
+	FROM
+		   TBL_REPLY
+	WHERE
+			RID = #{rid}	   
+</delete>
+
+</mapper>

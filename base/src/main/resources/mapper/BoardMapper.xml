@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.base.exam.web.mapper.BoardMapper">
+
+	<select id="boardList" parameterType="com.base.exam.web.dto.BoardDTO" resultType="com.base.exam.web.dto.BoardDTO">
+		SELECT
+		Z.ID
+		, Z.TITLE
+		, Z.CONTENT
+		, Z.VIEWCOUNT
+		, Z.REG_ID AS REGID
+		, DATE_FORMAT( Z.REG_DTTM, '%Y-%m-%d' ) AS REGDTTM
+		, Z.TOTAL_COUNT AS TOTALCOUNT
+		, Z.SEQ AS SEQ
+		, Z.REPLY_COUNT
+
+		FROM
+		(
+
+		SELECT
+		A.ID
+		, A.TITLE
+		, A.CONTENT
+		, A.VIEWCOUNT
+		, A.REG_ID
+		, A.REG_DTTM
+		, A.REPLY_COUNT
+		, SUM( A.CNT ) OVER() AS TOTAL_COUNT
+		, ROW_NUMBER() OVER( ORDER BY A.REG_DTTM DESC ) AS SEQ
+		FROM(
+
+		SELECT
+
+		ID
+		, TITLE
+		, CONTENT
+		, VIEWCOUNT
+		, REG_ID
+		, REG_DTTM
+		, REPLY_COUNT
+		, 1 AS CNT
+		FROM BOARD_TEST
+
+		) A
+
+		) Z
+		WHERE 1=1
+
+		<if test=" currentPage != '0' ">
+
+			AND CEIL( SEQ / #{pageSize} ) = #{currentPage}
+		</if>
+
+	</select>
+
+
+	<select id="boardDetail"
+		parameterType="com.base.exam.web.dto.BoardDTO" resultType="com.base.exam.web.dto.BoardDTO">
+		SELECT
+		  ID
+		, TITLE
+		, CONTENT
+		, REG_ID AS REGID
+		, REG_DTTM AS REGDTTM
+		FROM BOARD_TEST
+
+		WHERE ID = #{id}
+
+	</select>
+
+
+	<insert id="boardInsert" parameterType="com.base.exam.web.dto.BoardDTO">
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			SELECT
+			LPAD( COALESCE(CAST(CONV(MAX(ID),10,10) AS SIGNED INTEGER)+1, 1),14,0)
+			FROM
+			BOARD_TEST;
+
+		</selectKey>
+
+		INSERT INTO BOARD_TEST (
+		  ID
+		, TITLE
+		, CONTENT
+		, REG_DTTM
+		, REG_ID
+		, UPDT_DTTM
+		, UPDT_ID
+		)
+		VALUES
+		(
+		  #{id}
+		, #{title}
+		, #{content}
+		, NOW()
+		, #{regId}
+		, NOW()
+		, #{regId}
+		)
+	</insert>
+
+	<update id="boardUpdate" parameterType="com.base.exam.web.dto.BoardDTO">
+		UPDATE
+				BOARD_TEST
+		SET
+				 CONTENT = #{content}
+				,UPDT_DTTM = now()
+				,UPDT_ID = #{updtId}
+		WHERE
+				ID = #{id}
+
+	</update>
+	
+	<delete id="boardDelete" parameterType="com.base.exam.web.dto.BoardDTO">
+		DELETE
+		FROM
+				BOARD_TEST
+		WHERE
+				ID = #{id}	
+	</delete> 
+	
+	<update id="boardViewCnt" parameterType="com.base.exam.web.dto.BoardDTO">
+		UPDATE
+				BOARD_TEST
+		SET
+				VIEWCOUNT = viewCount +1
+		WHERE
+				ID = #{id}							
+	</update>
+	
+	
+	<update id="updateReplyCount" parameterType="com.base.exam.web.dto.BoardDTO">
+		UPDATE 
+				BOARD_TEST 
+		SET 
+				REPLY_COUNT = replyCount + #{amount} 
+		WHERE 
+				id = #{id}		 
+	</update>
+	
+	
+	
+  
+</mapper>
