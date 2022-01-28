@@ -26,7 +26,8 @@ public class JSONConvert {
     {
         JSONObject cJson = new JSONObject();
         try {
-
+        	
+        			
             if( "".equals( StringUtils.nullToBlank( reqBody ) ) )
             {
                 return cJson;
@@ -58,7 +59,10 @@ public class JSONConvert {
                     }
 
                     cJson.put( sKey , rsValue);
+                    
                 }
+                
+                
                 else if( obj instanceof Integer )
                 {
                     int rsValue = Integer.parseInt( String.valueOf( obj ) );
@@ -90,7 +94,7 @@ public class JSONConvert {
                         {
                             String value = "";
                             if( htmlEscapeType.equals( HTML_ESCAPE_TYPE.ESCAPE ) )
-                            {
+                            {                        
                                 value = HtmlUtils.htmlEscape( String.valueOf( sobj ) );
                             }
                             else if( htmlEscapeType.equals( HTML_ESCAPE_TYPE.UN_ESCAPE ) )

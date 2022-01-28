@@ -137,7 +137,7 @@ public class PageNavigator
     public void setStartPageUnit(int startPageUnit) {
         this.startPageUnit = startPageUnit;
     }
-
+    
     /**
      * @return Returns the endPageUnit.
      */
